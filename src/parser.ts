@@ -211,7 +211,7 @@ function inferStatus(
   }
 
   if (
-    /\b(salio|salió|resulto|resultó|resultado disponible|ya salio|ya salió)\b/i.test(
+    /(?:^|\s)(?:salio|salió|resulto|resultó|resultado disponible|ya salio|ya salió)(?=\s|$)/i.test(
       raw,
     )
   ) {
@@ -232,7 +232,7 @@ function cleanTitle(input: string): string {
   const cleaned = cleanSpaces(
     input
       .replace(
-        /\b(pendiente|esperando|cuando salga|cuando resulte|salio|salió|resulto|resultó|resultado disponible|bloqueado|bloqueada|trabado|trabada)\b/gi,
+        /(?:^|\s)(pendiente|esperando|cuando salga|cuando resulte|salio|salió|resulto|resultó|resultado disponible|bloqueado|bloqueada|trabado|trabada)(?=\s|$)/gi,
         " ",
       )
       .replace(/[()[\]{}]/g, " "),
