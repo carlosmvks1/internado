@@ -16,7 +16,14 @@ export type LoopStatus =
 
 export type Priority = "routine" | "important" | "urgent";
 
+export interface LoopEvent {
+ kind: "created" | "baseline" | "transition";
+ at: Date;
+ from?: LoopStatus;
+ to: LoopStatus;
+}
 export interface ClinicalLoop {
+ history?: readonly LoopEvent[];
   id: string;
   patientId?: string;
   rawCapture: string;

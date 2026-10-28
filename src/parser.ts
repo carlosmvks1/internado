@@ -293,6 +293,7 @@ export function parseCapture(rawCapture: string, now = new Date()): ParsedCaptur
       title === "Pendiente sin clasificar",
     createdAt,
     updatedAt: createdAt,
+    history: [{ kind: "created", at: createdAt, to: status }],
   };
 
   if (status === "waiting" || status === "review") {

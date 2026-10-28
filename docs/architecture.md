@@ -54,3 +54,11 @@ Los datos se almacenan localmente en IndexedDB. GitHub contiene únicamente cód
 - vista por acción y vista por paciente sin duplicar datos;
 - funcionamiento offline;
 - parser evaluable con pruebas automatizadas.
+
+## Historial y atención local
+
+Cada captura incluye un evento de creación. Cada transición válida agrega origen, destino y fecha sin reemplazar entradas previas. Los registros anteriores muestran una línea base al primer cambio; no se inventa su historia. El ciclo y su historial se guardan juntos en una transacción IndexedDB que lee el registro vigente. No es un registro inviolable ni sincronizado entre dispositivos.
+
+Ahora se ordena por puntuación descendente, luego creación e identificador. Puntos: prioridad explícita rutinaria 0/importante 100/urgente 1000; estado por hacer 10/esperando 0/revisar 60/actuar 70/bloqueado 20; vencimiento 80 más 10 por hora (máximo 120 adicionales); antigüedad del estado 12 por hora (máximo 60). Cerrados puntúan 0. Se recalcula con el reloj existente cada 30 segundos, sin escribir eventos de reloj.
+
+Una espera sin horario reaparece tras 4 horas desde el último cambio de estado (`WAITING_RESURFACE_HOURS`). Una fecha futura sigue en Próximo; revisar/actuar siguen en Ahora; bloqueados y cerrados permanecen separados. El tiempo de espera se reinicia al volver a Esperando. Las tarjetas muestran los motivos y permiten desplegar el historial. La puntuación organiza atención operacional: no estima gravedad ni recomienda conductas médicas.

@@ -1,9 +1,9 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { db } from "./db";
+import { attention, orderByAttention } from "./attention";
+import { db, moveLoop } from "./db";
 import { parseCapture } from "./parser";
 import {
   deriveAttentionBucket,
-  transitionLoop,
 } from "./stateMachine";
 import type {
   ClinicalLoop,
@@ -37,7 +37,9 @@ function triggerTime(loop: ClinicalLoop): Date | undefined {
 function LoopCard({
   loop,
   onMove,
+  now = new Date(),
 }: {
+  now?: Date;
   loop: ClinicalLoop;
   onMove: (loop: ClinicalLoop, status: LoopStatus) => void;
 }) {
@@ -110,6 +112,12 @@ function LoopCard({
         </div>
       )}
 
+      <p className="raw">Atención {attention(loop, now).score} · {attention(loop, now).reasons.join(" · ") || "Pendiente abierto"}</p>
+      <details><summary>Historial</summary><ol>
+        {(loop.history ?? [{ kind: "baseline", at: loop.updatedAt, to: loop.status }]).map((event, index) => (
+          <li key={index}>{new Date(event.at).toLocaleString("es-HN")} · {event.kind === "baseline" ? "Registro previo (historial anterior no disponible)" : event.kind === "created" ? "Creado" : statusLabel[event.from!]} → {statusLabel[event.to]}</li>
+        ))}
+      </ol></details>
       <div className="raw">{loop.rawCapture}</div>
 
       <div className="card-actions">
@@ -131,9 +139,11 @@ function Section({
   title,
   loops,
   empty,
+  now,
   onMove,
 }: {
   title: string;
+  now?: Date;
   loops: ClinicalLoop[];
   empty: string;
   onMove: (loop: ClinicalLoop, status: LoopStatus) => void;
@@ -149,7 +159,7 @@ function Section({
       ) : (
         <div className="cards">
           {loops.map((loop) => (
-            <LoopCard key={loop.id} loop={loop} onMove={onMove} />
+            <LoopCard key={loop.id} loop={loop} now={now} onMove={onMove} />
           ))}
         </div>
       )}
@@ -207,8 +217,8 @@ export default function App() {
   }
 
   async function move(loop: ClinicalLoop, status: LoopStatus) {
-    const updated = transitionLoop(loop, status);
-    await db.loops.put(updated);
+    try { await moveLoop(loop.id, status); }
+    catch (error) { window.alert(error instanceof Error ? error.message : "No se pudo guardar."); }
     await refresh();
   }
 
@@ -227,6 +237,7 @@ export default function App() {
       if (bucket !== "closed") result[bucket].push(loop);
     }
 
+    result.now = orderByAttention(result.now, now);
     return result;
   }, [openLoops, now]);
 
@@ -294,29 +305,37 @@ export default function App() {
         {tab === "now" && (
           <>
             <Section
+              now={now}
               title="Ahora"
               loops={buckets.now}
               empty="Nada exige atención inmediata."
               onMove={move}
             />
             <Section
+              now={now}
               title="Próximo"
               loops={buckets.upcoming}
               empty="No hay ciclos programados."
               onMove={move}
             />
             <Section
+              now={now}
               title="Esperando"
               loops={buckets.waiting}
               empty="No estás esperando nada sin hora definida."
               onMove={move}
             />
             <Section
+              now={now}
               title="Bloqueado"
               loops={buckets.blocked}
               empty="No hay bloqueos."
               onMove={move}
             />
+            <details>
+              <summary>Cerrados · {loops.length - openLoops.length}</summary>
+              <Section title="Historial de ciclos cerrados" now={now} loops={loops.filter(loop => loop.status === "closed")} empty="No hay ciclos cerrados." onMove={move} />
+            </details>
           </>
         )}
 

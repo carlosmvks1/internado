@@ -1,3 +1,4 @@
+import { isStaleWaiting } from "./attention";
 import type {
   AttentionBucket,
   ClinicalLoop,
@@ -28,6 +29,7 @@ export function transitionLoop(
 
   return {
     ...loop,
+    history: [...(loop.history ?? [{ kind: "baseline" as const, at: loop.updatedAt, to: loop.status }]), { kind: "transition", at: new Date(now), from: loop.status, to }],
     status: to,
     updatedAt: now,
     closedAt: to === "closed" ? now : undefined,
@@ -56,7 +58,7 @@ export function deriveAttentionBucket(
   }
 
   if (loop.status === "waiting") {
-    return trigger ? "upcoming" : "waiting";
+    return trigger ? "upcoming" : isStaleWaiting(loop, now) ? "now" : "waiting";
   }
 
   return trigger ? "upcoming" : "now";
