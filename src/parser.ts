@@ -21,6 +21,11 @@ const ACTION_WORDS = [
   "suspender",
   "preparar",
   "escalar",
+  "canalizar",
+  "vigilar",
+  "monitorizar",
+  "monitorear",
+  "controlar",
 ] as const;
 
 const actionPattern = ACTION_WORDS.join("|");
@@ -172,7 +177,7 @@ function inferType(raw: string, hasTime: boolean): LoopType {
   if (/\b(alta|decidir|decision|decisión)\b/i.test(raw)) return "decision";
 
   if (
-    /\b(interconsulta|ic|valoracion|valoración|cirugia|cirugía|cardio|cardiologia|cardiología|neuro|ortopedia|gine|pediatria|pediatría)\b/i.test(
+    /\b(interconsulta|interconsuta|ic|valoracion|valoración|cirugia|cirugía|cardio|cardiologia|cardiología|neuro|ortopedia|gine|pediatria|pediatría)\b/i.test(
       raw,
     )
   ) {
@@ -188,7 +193,7 @@ function inferType(raw: string, hasTime: boolean): LoopType {
   }
 
   if (
-    /\b(hb|hgb|hemoglobina|hemograma|k|potasio|na|sodio|creatinina|glucemia|laboratorio|labs?|tac|tc|rx|radiografia|radiografía|cultivo|hemocultivo|urocultivo|ego|ecg|troponina)\b/i.test(
+    /\b(hb|hgb|hemoglobina|hemograma|k|potasio|na|sodio|creat|creatinina|glucemia|laboratorio|labs?|tac|tc|rx|radiografia|radiografía|cultivo|hemocultivos?|urocultivo|ego|ecg|troponina)\b/i.test(
       raw,
     )
   ) {
@@ -218,7 +223,7 @@ function inferStatus(
     return "review";
   }
 
-  if (/\b(pendiente|esperando|cuando salga|cuando resulte)\b/i.test(raw)) {
+  if (/\b(pendiente|pendinte|esperando|cuando salga|cuando resulte)\b/i.test(raw)) {
     return "waiting";
   }
 
@@ -232,7 +237,7 @@ function cleanTitle(input: string): string {
   const cleaned = cleanSpaces(
     input
       .replace(
-        /(?:^|\s)(pendiente|esperando|cuando salga|cuando resulte|salio|salió|resulto|resultó|resultado disponible|bloqueado|bloqueada|trabado|trabada)(?=\s|$)/gi,
+        /(?:^|\s)(pendiente|pendinte|esperando|cuando salga|cuando resulte|salio|salió|resulto|resultó|resultado disponible|bloqueado|bloqueada|trabado|trabada)(?=\s|$)/gi,
         " ",
       )
       .replace(/[()[\]{}]/g, " "),
