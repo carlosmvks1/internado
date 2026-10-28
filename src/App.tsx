@@ -1,3 +1,4 @@
+import wardRound from "./fixtures/ward-round.json";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { attention, orderByAttention } from "./attention";
 import { db, moveLoop } from "./db";
@@ -172,6 +173,8 @@ export default function App() {
   const [tab, setTab] = useState<Tab>("now");
   const [capture, setCapture] = useState("");
   const [lastCapture, setLastCapture] = useState<ClinicalLoop | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
   const [now, setNow] = useState(new Date());
 
   async function refresh() {
@@ -220,6 +223,20 @@ export default function App() {
     try { await moveLoop(loop.id, status); }
     catch (error) { window.alert(error instanceof Error ? error.message : "No se pudo guardar."); }
     await refresh();
+  }
+
+  async function loadSimulation() {
+    if (saving) return;
+    setSaving(true);
+    try {
+      await db.transaction("rw", db.loops, async () => {
+        if (await db.loops.count()) throw new Error("La simulación requiere una lista vacía para evitar mezclar datos.");
+        await db.loops.bulkAdd(wardRound.map(c => parseCapture(c.input).loop));
+      });
+      setMessage("Simulación cargada: 10 pacientes, 40 pendientes ficticios.");
+      await refresh(); setTab("now");
+    } catch (error) { setMessage(error instanceof Error ? error.message : "No se pudo cargar."); }
+    finally { setSaving(false); }
   }
 
   const openLoops = loops.filter((loop) => loop.status !== "closed");
@@ -302,6 +319,7 @@ export default function App() {
       </nav>
 
       <main>
+        <p role="status">{message}</p>
         {tab === "now" && (
           <>
             <Section
@@ -350,6 +368,7 @@ export default function App() {
               detectar dónde falla el parser antes de depender de él.
             </p>
 
+            <button disabled={saving || loops.length > 0} onClick={loadSimulation}>Cargar pase ficticio · 10 pacientes / 40 pendientes (lista vacía)</button>
             <div className="examples">
               <button onClick={() => setCapture("23 Hb 6h si baja avisar")}>
                 23 Hb 6h si baja avisar
@@ -450,7 +469,7 @@ export default function App() {
           enterKeyHint="done"
           aria-label="Capturar pendiente"
         />
-        <button type="submit" disabled={!capture.trim()}>
+        <button type="submit" disabled={saving || !capture.trim()}>
           Guardar
         </button>
       </form>

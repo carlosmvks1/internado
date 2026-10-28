@@ -1,0 +1,402 @@
+[
+  {
+    "input": "1 Hb 2h si baja avisar",
+    "patient": "1",
+    "type": "result",
+    "status": "waiting",
+    "minutes": 120,
+    "condition": "baja",
+    "action": "avisar",
+    "priority": "routine"
+  },
+  {
+    "input": "1 reevaluar TA en 30 min",
+    "patient": "1",
+    "type": "surveillance",
+    "status": "todo",
+    "minutes": 30,
+    "condition": null,
+    "action": "reevaluar",
+    "priority": "routine"
+  },
+  {
+    "input": "1 IC cardio pendiente",
+    "patient": "1",
+    "type": "external",
+    "status": "waiting",
+    "minutes": null,
+    "condition": null,
+    "action": null,
+    "priority": "routine"
+  },
+  {
+    "input": "1 preparar alta hoy",
+    "patient": "1",
+    "type": "decision",
+    "status": "todo",
+    "minutes": null,
+    "condition": null,
+    "action": "preparar",
+    "priority": "important"
+  },
+  {
+    "input": "2 TAC bloqueado",
+    "patient": "2",
+    "type": "result",
+    "status": "blocked",
+    "minutes": null,
+    "condition": null,
+    "action": null,
+    "priority": "routine"
+  },
+  {
+    "input": "2 Hb salió revisar",
+    "patient": "2",
+    "type": "result",
+    "status": "review",
+    "minutes": null,
+    "condition": null,
+    "action": "revisar",
+    "priority": "routine"
+  },
+  {
+    "input": "2 creatinina mañana 6am revisar",
+    "patient": "2",
+    "type": "result",
+    "status": "waiting",
+    "minutes": 1320,
+    "condition": null,
+    "action": "revisar",
+    "priority": "routine"
+  },
+  {
+    "input": "2 ECG urgente",
+    "patient": "2",
+    "type": "result",
+    "status": "todo",
+    "minutes": null,
+    "condition": null,
+    "action": null,
+    "priority": "urgent"
+  },
+  {
+    "input": "3 Hb 2h si baja avisar",
+    "patient": "3",
+    "type": "result",
+    "status": "waiting",
+    "minutes": 120,
+    "condition": "baja",
+    "action": "avisar",
+    "priority": "routine"
+  },
+  {
+    "input": "3 reevaluar TA en 30 min",
+    "patient": "3",
+    "type": "surveillance",
+    "status": "todo",
+    "minutes": 30,
+    "condition": null,
+    "action": "reevaluar",
+    "priority": "routine"
+  },
+  {
+    "input": "3 IC cardio pendiente",
+    "patient": "3",
+    "type": "external",
+    "status": "waiting",
+    "minutes": null,
+    "condition": null,
+    "action": null,
+    "priority": "routine"
+  },
+  {
+    "input": "3 preparar alta hoy",
+    "patient": "3",
+    "type": "decision",
+    "status": "todo",
+    "minutes": null,
+    "condition": null,
+    "action": "preparar",
+    "priority": "important"
+  },
+  {
+    "input": "4 TAC bloqueado",
+    "patient": "4",
+    "type": "result",
+    "status": "blocked",
+    "minutes": null,
+    "condition": null,
+    "action": null,
+    "priority": "routine"
+  },
+  {
+    "input": "4 Hb salió revisar",
+    "patient": "4",
+    "type": "result",
+    "status": "review",
+    "minutes": null,
+    "condition": null,
+    "action": "revisar",
+    "priority": "routine"
+  },
+  {
+    "input": "4 creatinina mañana 6am revisar",
+    "patient": "4",
+    "type": "result",
+    "status": "waiting",
+    "minutes": 1320,
+    "condition": null,
+    "action": "revisar",
+    "priority": "routine"
+  },
+  {
+    "input": "4 ECG urgente",
+    "patient": "4",
+    "type": "result",
+    "status": "todo",
+    "minutes": null,
+    "condition": null,
+    "action": null,
+    "priority": "urgent"
+  },
+  {
+    "input": "5 Hb 2h si baja avisar",
+    "patient": "5",
+    "type": "result",
+    "status": "waiting",
+    "minutes": 120,
+    "condition": "baja",
+    "action": "avisar",
+    "priority": "routine"
+  },
+  {
+    "input": "5 reevaluar TA en 30 min",
+    "patient": "5",
+    "type": "surveillance",
+    "status": "todo",
+    "minutes": 30,
+    "condition": null,
+    "action": "reevaluar",
+    "priority": "routine"
+  },
+  {
+    "input": "5 IC cardio pendiente",
+    "patient": "5",
+    "type": "external",
+    "status": "waiting",
+    "minutes": null,
+    "condition": null,
+    "action": null,
+    "priority": "routine"
+  },
+  {
+    "input": "5 preparar alta hoy",
+    "patient": "5",
+    "type": "decision",
+    "status": "todo",
+    "minutes": null,
+    "condition": null,
+    "action": "preparar",
+    "priority": "important"
+  },
+  {
+    "input": "6 TAC bloqueado",
+    "patient": "6",
+    "type": "result",
+    "status": "blocked",
+    "minutes": null,
+    "condition": null,
+    "action": null,
+    "priority": "routine"
+  },
+  {
+    "input": "6 Hb salió revisar",
+    "patient": "6",
+    "type": "result",
+    "status": "review",
+    "minutes": null,
+    "condition": null,
+    "action": "revisar",
+    "priority": "routine"
+  },
+  {
+    "input": "6 creatinina mañana 6am revisar",
+    "patient": "6",
+    "type": "result",
+    "status": "waiting",
+    "minutes": 1320,
+    "condition": null,
+    "action": "revisar",
+    "priority": "routine"
+  },
+  {
+    "input": "6 ECG urgente",
+    "patient": "6",
+    "type": "result",
+    "status": "todo",
+    "minutes": null,
+    "condition": null,
+    "action": null,
+    "priority": "urgent"
+  },
+  {
+    "input": "7 Hb 2h si baja avisar",
+    "patient": "7",
+    "type": "result",
+    "status": "waiting",
+    "minutes": 120,
+    "condition": "baja",
+    "action": "avisar",
+    "priority": "routine"
+  },
+  {
+    "input": "7 reevaluar TA en 30 min",
+    "patient": "7",
+    "type": "surveillance",
+    "status": "todo",
+    "minutes": 30,
+    "condition": null,
+    "action": "reevaluar",
+    "priority": "routine"
+  },
+  {
+    "input": "7 IC cardio pendiente",
+    "patient": "7",
+    "type": "external",
+    "status": "waiting",
+    "minutes": null,
+    "condition": null,
+    "action": null,
+    "priority": "routine"
+  },
+  {
+    "input": "7 preparar alta hoy",
+    "patient": "7",
+    "type": "decision",
+    "status": "todo",
+    "minutes": null,
+    "condition": null,
+    "action": "preparar",
+    "priority": "important"
+  },
+  {
+    "input": "8 TAC bloqueado",
+    "patient": "8",
+    "type": "result",
+    "status": "blocked",
+    "minutes": null,
+    "condition": null,
+    "action": null,
+    "priority": "routine"
+  },
+  {
+    "input": "8 Hb salió revisar",
+    "patient": "8",
+    "type": "result",
+    "status": "review",
+    "minutes": null,
+    "condition": null,
+    "action": "revisar",
+    "priority": "routine"
+  },
+  {
+    "input": "8 creatinina mañana 6am revisar",
+    "patient": "8",
+    "type": "result",
+    "status": "waiting",
+    "minutes": 1320,
+    "condition": null,
+    "action": "revisar",
+    "priority": "routine"
+  },
+  {
+    "input": "8 ECG urgente",
+    "patient": "8",
+    "type": "result",
+    "status": "todo",
+    "minutes": null,
+    "condition": null,
+    "action": null,
+    "priority": "urgent"
+  },
+  {
+    "input": "9 Hb 2h si baja avisar",
+    "patient": "9",
+    "type": "result",
+    "status": "waiting",
+    "minutes": 120,
+    "condition": "baja",
+    "action": "avisar",
+    "priority": "routine"
+  },
+  {
+    "input": "9 reevaluar TA en 30 min",
+    "patient": "9",
+    "type": "surveillance",
+    "status": "todo",
+    "minutes": 30,
+    "condition": null,
+    "action": "reevaluar",
+    "priority": "routine"
+  },
+  {
+    "input": "9 IC cardio pendiente",
+    "patient": "9",
+    "type": "external",
+    "status": "waiting",
+    "minutes": null,
+    "condition": null,
+    "action": null,
+    "priority": "routine"
+  },
+  {
+    "input": "9 preparar alta hoy",
+    "patient": "9",
+    "type": "decision",
+    "status": "todo",
+    "minutes": null,
+    "condition": null,
+    "action": "preparar",
+    "priority": "important"
+  },
+  {
+    "input": "10 TAC bloqueado",
+    "patient": "10",
+    "type": "result",
+    "status": "blocked",
+    "minutes": null,
+    "condition": null,
+    "action": null,
+    "priority": "routine"
+  },
+  {
+    "input": "10 Hb salió revisar",
+    "patient": "10",
+    "type": "result",
+    "status": "review",
+    "minutes": null,
+    "condition": null,
+    "action": "revisar",
+    "priority": "routine"
+  },
+  {
+    "input": "10 creatinina mañana 6am revisar",
+    "patient": "10",
+    "type": "result",
+    "status": "waiting",
+    "minutes": 1320,
+    "condition": null,
+    "action": "revisar",
+    "priority": "routine"
+  },
+  {
+    "input": "10 ECG urgente",
+    "patient": "10",
+    "type": "result",
+    "status": "todo",
+    "minutes": null,
+    "condition": null,
+    "action": null,
+    "priority": "urgent"
+  }
+]

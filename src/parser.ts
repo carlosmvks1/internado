@@ -255,7 +255,11 @@ export function parseCapture(rawCapture: string, now = new Date()): ParsedCaptur
   }
 
   const patient = stripPatient(raw);
-  const time = extractTime(patient.rest, now);
+  const tomorrow = /\bmañana\b/i.test(patient.rest);
+  const reference = new Date(now);
+  if (tomorrow) { reference.setDate(reference.getDate() + 1); reference.setHours(0, 0, 0, 0); }
+  const time = extractTime(patient.rest.replace(/\bmañana\b/gi, " "), reference);
+  if (tomorrow && !time.date) time.rest = patient.rest;
   const conditional = extractConditionAndAction(time.rest);
 
   const title = cleanTitle(conditional.rest);
