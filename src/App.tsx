@@ -1,3 +1,6 @@
+import { liveQuery } from "dexie";
+import { DialectFeedback, DialectExplanation, DialectManager } from "./DialectPanel";
+import type { LearnedAlias } from './dialect';
 import wardRound from "./fixtures/ward-round.json";
 import {
   FormEvent,
@@ -189,7 +192,7 @@ function LoopCard({
         {time && <time>{time}</time>}
       </div>
 
-      <h3>{loop.title}</h3>
+      <h3>{loop.title}</h3><DialectExplanation loop={loop} /><DialectFeedback loop={loop} />
 
       {loop.needsReview && (
         <div className="review-warning">
@@ -514,6 +517,8 @@ function Section({
 }
 
 export default function App() {
+  const [rules, setRules] = useState<LearnedAlias[]>([]);
+  async function refreshRules() { setRules(await db.aliases.toArray()); }
   const [loops, setLoops] = useState<ClinicalLoop[]>([]);
   const [tab, setTab] = useState<Tab>("now");
   const [capture, setCapture] = useState("");
@@ -523,6 +528,7 @@ export default function App() {
   const [now, setNow] = useState(new Date());
 
   async function refresh() {
+    await refreshRules();
     const stored = await db.loops.toArray();
     setLoops(
       stored
@@ -547,9 +553,10 @@ export default function App() {
   }
 
   useEffect(() => {
+    const subscription = liveQuery(() => db.aliases.toArray()).subscribe(setRules);
     void refresh();
     const interval = window.setInterval(() => setNow(new Date()), 30_000);
-    return () => window.clearInterval(interval);
+    return () => { subscription.unsubscribe(); window.clearInterval(interval); };
   }, []);
 
   async function runWrite(action: () => Promise<void>) {
@@ -575,7 +582,7 @@ export default function App() {
     const original = capture;
     try {
       await runWrite(async () => {
-        const parsed = parseCapture(value);
+        const parsed = parseCapture(value, new Date(), await db.aliases.toArray());
         await db.loops.add(parsed.loop);
         setLastCapture(parsed.loop);
         setCapture("");
@@ -703,11 +710,11 @@ export default function App() {
   const capturePreview = useMemo(() => {
     if (!capture.trim()) return null;
     try {
-      return parseCapture(capture).loop;
+      return parseCapture(capture, new Date(), rules).loop;
     } catch {
       return null;
     }
-  }, [capture]);
+  }, [capture, rules]);
 
   const closedLoops = loops.filter((loop) => loop.status === "closed");
 
@@ -808,6 +815,7 @@ export default function App() {
               Cargar pase ficticio · 10 pacientes / 40 pendientes
             </button>
 
+            <DialectManager rules={rules} refresh={refreshRules} />
             <div className="examples">
               <button onClick={() => setCapture("23 Hb 6h si baja avisar")}>
                 23 Hb 6h si baja avisar
@@ -829,6 +837,7 @@ export default function App() {
                   </div>
                 )}
 
+                <DialectExplanation loop={capturePreview} />
                 <div className="preview-grid">
                   <div>
                     <span>Paciente</span>

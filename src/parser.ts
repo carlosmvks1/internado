@@ -1,3 +1,4 @@
+import { applyDialect, type LearnedAlias } from "./dialect";
 import type {
   ClinicalLoop,
   LoopStatus,
@@ -250,7 +251,7 @@ function cleanTitle(input: string): string {
   return cleaned;
 }
 
-export function parseCapture(rawCapture: string, now = new Date()): ParsedCapture {
+export function parseCapture(rawCapture: string, now = new Date(), rules: LearnedAlias[] = []): ParsedCapture {
   const raw = cleanSpaces(rawCapture);
 
   if (!raw) {
@@ -267,7 +268,8 @@ export function parseCapture(rawCapture: string, now = new Date()): ParsedCaptur
   const ambiguousTime = AMBIGUOUS_TIME_PATTERN.test(patient.rest);
   const unresolvedTomorrow = tomorrow && !time.date;
 
-  const title = cleanTitle(conditional.rest);
+  const personal = applyDialect(cleanTitle(conditional.rest), rules);
+  const title = personal.title;
   const type = inferType(raw, Boolean(time.date));
   const status = inferStatus(
     raw,
@@ -286,7 +288,7 @@ export function parseCapture(rawCapture: string, now = new Date()): ParsedCaptur
   if (type !== "action") confidence += 0.05;
   confidence = Math.min(0.99, Number(confidence.toFixed(2)));
 
-  const reviewReasons: string[] = [];
+  const reviewReasons: string[] = personal.explanations.filter(e => !e.applied).map(e => e.reason);
   if (!patient.patientId) reviewReasons.push("Falta identificar cama/paciente.");
   if (title === "Pendiente sin clasificar") {
     reviewReasons.push("No pude identificar el asunto.");
@@ -306,6 +308,7 @@ export function parseCapture(rawCapture: string, now = new Date()): ParsedCaptur
     id: makeId(),
     patientId: patient.patientId,
     rawCapture: raw,
+    dialect: personal.explanations,
     title,
     type,
     status,

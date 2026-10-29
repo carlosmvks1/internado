@@ -1,3 +1,4 @@
+import type { AliasExplanation } from "./dialect";
 export type LoopType =
   | "action"
   | "result"
@@ -36,6 +37,7 @@ export interface ClinicalLoop {
   parentLoopId?: string;
   patientId?: string;
   rawCapture: string;
+  dialect?: AliasExplanation[];
   title: string;
   type: LoopType;
   status: LoopStatus;
