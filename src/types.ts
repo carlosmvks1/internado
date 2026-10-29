@@ -26,7 +26,7 @@ export interface LoopEvent {
     | "spawn";
   at: Date;
   from?: LoopStatus;
-  to?: LoopStatus;
+  to: LoopStatus;
   detail?: string;
 }
 
