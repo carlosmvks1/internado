@@ -17,9 +17,15 @@ Incluye:
 - vista **Pacientes**;
 - almacenamiento local con IndexedDB;
 - PWA/offline;
-- pruebas del parser.
+- historial auditable por ciclo;
+- priorización dinámica y resurfacing;
+- registro de resultados;
+- creación de un siguiente ciclo heredando automáticamente la cama;
+- corrección manual cuando una captura es ambigua;
+- reapertura de ciclos cerrados;
+- pruebas automatizadas del parser y del flujo de estados.
 
-Ejemplos de captura:
+No existe una gramática obligatoria: la captura intenta aceptar lenguaje abreviado natural y marca frases ambiguas para corrección. Ejemplos:
 
 ```
 23 Hb 6h si baja avisar
