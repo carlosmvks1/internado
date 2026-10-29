@@ -18,6 +18,16 @@ export function canTransition(from: LoopStatus, to: LoopStatus): boolean {
   return transitions[from].includes(to);
 }
 
+function legacyHistory(loop: ClinicalLoop) {
+  return loop.history ?? [
+    {
+      kind: "baseline" as const,
+      at: loop.updatedAt,
+      to: loop.status,
+    },
+  ];
+}
+
 export function transitionLoop(
   loop: ClinicalLoop,
   to: LoopStatus,
@@ -27,12 +37,94 @@ export function transitionLoop(
     throw new Error(`Transición inválida: ${loop.status} → ${to}`);
   }
 
+  // A trigger belongs to the state that created it. Re-entering another state
+  // must not inherit an already-expired reminder.
+  const clearTrigger = to !== loop.status;
+
   return {
     ...loop,
-    history: [...(loop.history ?? [{ kind: "baseline" as const, at: loop.updatedAt, to: loop.status }]), { kind: "transition", at: new Date(now), from: loop.status, to }],
+    history: [
+      ...legacyHistory(loop),
+      {
+        kind: "transition",
+        at: new Date(now),
+        from: loop.status,
+        to,
+      },
+    ],
     status: to,
-    updatedAt: now,
-    closedAt: to === "closed" ? now : undefined,
+    updatedAt: new Date(now),
+    closedAt: to === "closed" ? new Date(now) : undefined,
+    dueAt: clearTrigger ? undefined : loop.dueAt,
+    reviewAt: clearTrigger ? undefined : loop.reviewAt,
+    waitingFor: to === "waiting" ? loop.waitingFor : undefined,
+  };
+}
+
+export function recordLoopResult(
+  loop: ClinicalLoop,
+  result: string,
+  now = new Date(),
+): ClinicalLoop {
+  const detail = result.trim();
+  if (!detail) throw new Error("El resultado no puede estar vacío.");
+
+  const moved =
+    loop.status === "review"
+      ? { ...loop, dueAt: undefined, reviewAt: undefined }
+      : transitionLoop(loop, "review", now);
+
+  return {
+    ...moved,
+    lastResult: detail,
+    updatedAt: new Date(now),
+    history: [
+      ...legacyHistory(moved),
+      {
+        kind: "result",
+        at: new Date(now),
+        to: "review",
+        detail,
+      },
+    ],
+  };
+}
+
+export function editLoop(
+  loop: ClinicalLoop,
+  patch: Partial<
+    Pick<
+      ClinicalLoop,
+      | "patientId"
+      | "title"
+      | "type"
+      | "status"
+      | "priority"
+      | "condition"
+      | "nextAction"
+      | "dueAt"
+      | "reviewAt"
+      | "waitingFor"
+      | "needsReview"
+      | "reviewReason"
+    >
+  >,
+  detail = "Corrección manual",
+  now = new Date(),
+): ClinicalLoop {
+  return {
+    ...loop,
+    ...patch,
+    updatedAt: new Date(now),
+    history: [
+      ...legacyHistory(loop),
+      {
+        kind: "edited",
+        at: new Date(now),
+        to: patch.status ?? loop.status,
+        detail,
+      },
+    ],
   };
 }
 
