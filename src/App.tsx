@@ -90,8 +90,10 @@ function eventText(loop: ClinicalLoop, index: number): string {
     return event.detail ?? "Generó un siguiente ciclo";
   }
 
-  const from = event.from ? statusLabel[event.from] : "—";
-  return `${from} → ${statusLabel[event.to]}`;
+  const fromStatus = event.from;
+  const toStatus = event.to;
+  const from = fromStatus ? statusLabel[fromStatus] : "—";
+  return `${from} → ${statusLabel[toStatus]}`;
 }
 
 interface EditDraft {
