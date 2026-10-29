@@ -17,14 +17,23 @@ export type LoopStatus =
 export type Priority = "routine" | "important" | "urgent";
 
 export interface LoopEvent {
- kind: "created" | "baseline" | "transition";
- at: Date;
- from?: LoopStatus;
- to: LoopStatus;
+  kind:
+    | "created"
+    | "baseline"
+    | "transition"
+    | "result"
+    | "edited"
+    | "spawn";
+  at: Date;
+  from?: LoopStatus;
+  to?: LoopStatus;
+  detail?: string;
 }
+
 export interface ClinicalLoop {
- history?: readonly LoopEvent[];
+  history?: readonly LoopEvent[];
   id: string;
+  parentLoopId?: string;
   patientId?: string;
   rawCapture: string;
   title: string;
@@ -35,9 +44,11 @@ export interface ClinicalLoop {
   waitingFor?: string;
   condition?: string;
   nextAction?: string;
+  lastResult?: string;
   priority: Priority;
   confidence: number;
   needsReview: boolean;
+  reviewReason?: string;
   createdAt: Date;
   updatedAt: Date;
   closedAt?: Date;
