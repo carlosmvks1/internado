@@ -54,4 +54,18 @@ describe("parseCapture", () => {
     expect(loop.nextAction?.toLowerCase()).toBe("llamar");
     expect(loop.reviewAt?.getHours()).toBe(14);
   });
+  it("marca referencias temporales ambiguas en vez de fingir certeza", () => {
+    const { loop } = parseCapture("4 rx después del pase revisar", now);
+
+    expect(loop.patientId).toBe("4");
+    expect(loop.needsReview).toBe(true);
+    expect(loop.reviewReason).toMatch(/temporal/i);
+  });
+
+  it("marca mañana sin hora para corrección", () => {
+    const { loop } = parseCapture("12 creat mañana revisar", now);
+
+    expect(loop.needsReview).toBe(true);
+    expect(loop.reviewReason).toMatch(/hora concreta/i);
+  });
 });
