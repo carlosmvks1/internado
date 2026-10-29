@@ -30,6 +30,9 @@ const ACTION_WORDS = [
 
 const actionPattern = ACTION_WORDS.join("|");
 
+const AMBIGUOUS_TIME_PATTERN =
+  /\b(despu[eé]s del pase|despu[eé]s|m[aá]s tarde|luego|cuando pueda|al rato)\b/i;
+
 function makeId(): string {
   if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
   return `loop-${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -261,6 +264,8 @@ export function parseCapture(rawCapture: string, now = new Date()): ParsedCaptur
   const time = extractTime(patient.rest.replace(/\bmañana\b/gi, " "), reference);
   if (tomorrow && !time.date) time.rest = patient.rest;
   const conditional = extractConditionAndAction(time.rest);
+  const ambiguousTime = AMBIGUOUS_TIME_PATTERN.test(patient.rest);
+  const unresolvedTomorrow = tomorrow && !time.date;
 
   const title = cleanTitle(conditional.rest);
   const type = inferType(raw, Boolean(time.date));
@@ -281,6 +286,21 @@ export function parseCapture(rawCapture: string, now = new Date()): ParsedCaptur
   if (type !== "action") confidence += 0.05;
   confidence = Math.min(0.99, Number(confidence.toFixed(2)));
 
+  const reviewReasons: string[] = [];
+  if (!patient.patientId) reviewReasons.push("Falta identificar cama/paciente.");
+  if (title === "Pendiente sin clasificar") {
+    reviewReasons.push("No pude identificar el asunto.");
+  }
+  if (ambiguousTime) {
+    reviewReasons.push("La referencia temporal es ambigua.");
+  }
+  if (unresolvedTomorrow) {
+    reviewReasons.push("“Mañana” necesita una hora concreta.");
+  }
+  if (confidence < 0.65 && reviewReasons.length === 0) {
+    reviewReasons.push("Interpretación con baja confianza.");
+  }
+
   const createdAt = new Date(now);
   const loop: ClinicalLoop = {
     id: makeId(),
@@ -291,10 +311,8 @@ export function parseCapture(rawCapture: string, now = new Date()): ParsedCaptur
     status,
     priority,
     confidence,
-    needsReview:
-      confidence < 0.65 ||
-      !patient.patientId ||
-      title === "Pendiente sin clasificar",
+    needsReview: reviewReasons.length > 0,
+    reviewReason: reviewReasons.length ? reviewReasons.join(" ") : undefined,
     createdAt,
     updatedAt: createdAt,
     history: [{ kind: "created", at: createdAt, to: status }],
