@@ -9,6 +9,7 @@ import type {
   ClinicalLoop,
   LoopStatus,
 } from "./types";
+import { followUpCaptureFor } from "./workflow";
 
 class InternadoDB extends Dexie {
   loops!: EntityTable<ClinicalLoop, "id">;
@@ -18,7 +19,7 @@ class InternadoDB extends Dexie {
 
     this.version(1).stores({
       loops:
-        "id, parentLoopId, patientId, status, type, priority, dueAt, reviewAt, createdAt, updatedAt",
+        "id, patientId, status, type, priority, dueAt, reviewAt, createdAt, updatedAt",
     });
   }
 }
@@ -66,20 +67,6 @@ export async function updateLoop(
     await db.loops.put(updated);
     return updated;
   });
-}
-
-function hasPatientPrefix(value: string): boolean {
-  return /^(?:(?:cama|bed|c)\s*)?#?\s*\d{1,3}\b/i.test(value.trim());
-}
-
-export function followUpCaptureFor(
-  parent: ClinicalLoop,
-  rawCapture: string,
-): string {
-  const raw = rawCapture.trim();
-  if (!raw) throw new Error("El siguiente paso no puede estar vacío.");
-  if (!parent.patientId || hasPatientPrefix(raw)) return raw;
-  return `C${parent.patientId} ${raw}`;
 }
 
 export async function createFollowUpAndClose(
